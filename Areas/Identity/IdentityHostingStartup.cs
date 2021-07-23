@@ -17,10 +17,7 @@ namespace delicio_app.Areas.Identity
             builder.ConfigureServices((context, services) => {
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(
-                        context.Configuration.GetConnectionString("ApplicationDbContextConnection")));
-
-                services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddEntityFrameworkStores<ApplicationDbContext>();
+                        context.Configuration.GetConnectionString("DefaultConnection")));
             });
         }
     }
