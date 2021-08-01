@@ -18,5 +18,9 @@ namespace delicioapp.Areas.Admin.Controllers
         public async Task<IActionResult> Index(){
             return View(await _db.Categories.ToListAsync());
         }
+
+        public IActionResult Create(){
+            return View();
+        }
     }
 }
