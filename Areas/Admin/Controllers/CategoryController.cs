@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using delicio_app.Data;
+using delicio_app.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,18 @@ namespace delicioapp.Areas.Admin.Controllers
 
         public IActionResult Create(){
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Category category){
+            if(ModelState.IsValid){
+                _db.Categories.Add(category);
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            return View(category);
         }
     }
 }
