@@ -35,5 +35,18 @@ namespace delicioapp.Areas.Admin.Controllers
             }
             return View(category);
         }
+    
+        public async Task<IActionResult> Edit(int? id){
+            if(id == null){
+                return NotFound();
+            }
+
+            Category category = await _db.Categories.FindAsync(id);
+            if(category == null){
+                return NotFound();
+            }
+
+            return View(category);
+        }
     }
 }
