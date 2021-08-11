@@ -7,6 +7,7 @@ namespace delicio_app.Models
         [Key]
         public int ID { get; set; }
         
+        [Display(Name="Category Name")]
         [Required]
         public string Name { get; set; }
     }
