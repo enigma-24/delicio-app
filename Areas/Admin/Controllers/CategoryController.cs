@@ -73,5 +73,18 @@ namespace delicioapp.Areas.Admin.Controllers
 
             return View(category);
         }
+    
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id){
+            Category category = await _db.Categories.FindAsync(id);
+
+            if(category == null)
+                return View();
+
+            _db.Categories.Remove(category);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
