@@ -13,6 +13,9 @@ namespace delicioapp.Areas.Admin.Controllers
     {
         private readonly ApplicationDbContext _db;
 
+        [TempData]
+        public string StatusMessage { get; set; }
+
         public SubCategoryController(ApplicationDbContext db)
         {
             _db = db;
@@ -31,6 +34,29 @@ namespace delicioapp.Areas.Admin.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CategoriesViewModel model){
+            if(ModelState.IsValid){
+                var doesSubCategoryExists = _db.SubCategories.Include(m => m.Category).Where(x => x.Name == model.SubCategory.Name && x.CategoryID == model.SubCategory.CategoryID);
+
+                if(doesSubCategoryExists.Any()){
+                    StatusMessage = "Error: Sub Category already exists under " + doesSubCategoryExists.First().Category.Name + " category. Please use another name!";
+                }else{
+                    _db.SubCategories.Add(model.SubCategory);
+                    await _db.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            var viewModel = new CategoriesViewModel{
+                CategoryList = await _db.Categories.ToListAsync(),
+                SubCategory = model.SubCategory,
+                SubCategoryList = await _db.SubCategories.OrderBy(x => x.Name).Select(m => m.Name).ToListAsync(),
+                StatusMessage = StatusMessage,
+            };
+            return View(viewModel);
         }
     }
 }

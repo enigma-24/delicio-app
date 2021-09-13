@@ -10,7 +10,9 @@
     <h2 class="text-info">Create Sub Category</h2>
 <br>
 
-<div class="border background-white">
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<div class="border background-white row">
 <div class="col-8 border-right">
 <form asp-action="Create">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
