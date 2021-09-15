@@ -44,10 +44,42 @@
     @if(Model.SubCategoryList.Count() > 0){
         <p>Existing Subcategories: </p>
         <div id="SubCategoryList">
-            <ul class="list-group">
-
-            </ul>
+            <ul class="list-group"></ul>
         </div>
     }
 </div>
 </div>
+
+@section scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        const updateSubCategoryList = () => {
+            const categorySelected = $('#ddlCategorylist').val();
+            $list = $('#SubCategoryList');
+
+            $.ajax({
+                method: 'GET',
+                url: '/admin/subcategory/GetSubCategory/' + categorySelected,
+                dataType: 'text',
+                success: function(response){
+                    const data = JSON.parse(response);
+                    $list.html('');
+                    $list.append('<ul class="list-group">');
+                    for(let item of data){
+                        $list.append('<li class="list-group-item">' + item.text + '</li>');
+                    }
+                    $list.append('</ul>');
+                },
+            });
+        };
+
+        $(document).ready(function(){
+            updateSubCategoryList();
+        });
+
+        $('#ddlCategorylist').on('change', function(){
+            updateSubCategoryList();
+        });
+    </script>
+}

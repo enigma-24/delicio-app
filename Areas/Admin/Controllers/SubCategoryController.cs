@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using delicio_app.Data;
 using delicio_app.Models;
 using delicio_app.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace delicioapp.Areas.Admin.Controllers
@@ -57,6 +59,13 @@ namespace delicioapp.Areas.Admin.Controllers
                 StatusMessage = StatusMessage,
             };
             return View(viewModel);
+        }
+
+        [ActionName("GetSubCategory")]
+        public async Task<IActionResult> GetSubCategory(int id){
+            List<SubCategory> subCategories = new List<SubCategory>();
+            subCategories = await _db.SubCategories.Where(x => x.CategoryID == id).ToListAsync();
+            return Json(new SelectList(subCategories, "ID", "Name"));
         }
     }
 }
