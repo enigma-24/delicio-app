@@ -67,5 +67,52 @@ namespace delicioapp.Areas.Admin.Controllers
             subCategories = await _db.SubCategories.Where(x => x.CategoryID == id).ToListAsync();
             return Json(new SelectList(subCategories, "ID", "Name"));
         }
+
+        public async Task<IActionResult> Edit(int? id){
+            if(id == null){
+                return NotFound();
+            }
+
+            SubCategory subCategory = await _db.SubCategories.SingleOrDefaultAsync(x => x.ID == id);
+
+            if(subCategory == null){
+                return NotFound();
+            }
+
+            CategoriesViewModel model = new CategoriesViewModel{
+                CategoryList = await _db.Categories.ToListAsync(),
+                SubCategory = subCategory,
+                SubCategoryList = await _db.SubCategories.OrderBy(x => x.Name).Select(m => m.Name).Distinct().ToListAsync(),
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, CategoriesViewModel model){
+            if(ModelState.IsValid){
+                var doesSubCategoryExists = _db.SubCategories.Include(m => m.Category).Where(x => x.Name == model.SubCategory.Name && x.CategoryID == model.SubCategory.CategoryID);
+
+                if(doesSubCategoryExists.Any()){
+                    StatusMessage = "Error: Sub Category already exists under " + doesSubCategoryExists.First().Category.Name + " category. Please use another name!";
+                }
+                else
+                {
+                    SubCategory subCategoryInDB = await _db.SubCategories.FindAsync(id);
+                    subCategoryInDB.Name = model.SubCategory.Name;
+
+                    await _db.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            var viewModel = new CategoriesViewModel{
+                CategoryList = await _db.Categories.ToListAsync(),
+                SubCategory = model.SubCategory,
+                SubCategoryList = await _db.SubCategories.OrderBy(x => x.Name).Select(m => m.Name).ToListAsync(),
+                StatusMessage = StatusMessage,
+            };
+            return View(viewModel);
+        }
     }
 }
