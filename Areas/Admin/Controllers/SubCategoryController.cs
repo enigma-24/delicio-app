@@ -114,5 +114,21 @@ namespace delicioapp.Areas.Admin.Controllers
             };
             return View(viewModel);
         }
+    
+        //GET Details
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var subCategory = await _db.SubCategories.Include(s => s.Category).SingleOrDefaultAsync(m => m.ID == id);
+            if (subCategory == null)
+            {
+                return NotFound();
+            }
+
+            return View(subCategory);
+        } 
     }
 }
